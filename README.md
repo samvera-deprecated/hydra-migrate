@@ -1,4 +1,4 @@
-# Hydra::Migrate
+# Hydra::Migrate [![Build Status](https://travis-ci.org/projecthydra/hydra-migrate.png?branch=master)](https://travis-ci.org/projecthydra/hydra-migrate)
 
 Simple migrations for Hydra models
 
