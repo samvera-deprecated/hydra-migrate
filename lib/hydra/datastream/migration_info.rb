@@ -1,22 +1,28 @@
+require 'active_fedora'
+
 module Hydra
   module Datastream
     class MigrationInfo < ActiveFedora::OmDatastream
       set_terminology do |t|
         t.root(:path=>"migrationInfo", :xmlns=>"http://hydra-collab.stanford.edu/schemas/migrationInfo/v1", :namespace_prefix=>nil)
         t.current
-        t.migration do
-          t.from(:path=>'@from')
-          t.to(:path=>'@to')
-          t.at(:path=>'@at')
+        t.history do
+          t.migration do
+            t.from(:path=>'@from')
+            t.to(:path=>'@to')
+            t.at(:path=>'@at')
+          end
         end
       end
 
-      class << self
-        attr_accessor :default_version
-
-        def xml_template
-          %{'<migrationInfo xmlns="http://hydra-collab.stanford.edu/schemas/migrationInfo/v1"/>'}
+      def self.xml_template
+        builder = Nokogiri::XML::Builder.new do |xml|
+          xml.migrationInfo(:xmlns=>"http://hydra-collab.stanford.edu/schemas/migrationInfo/v1") {
+            xml.current
+            xml.history
+          }
         end
+        builder.doc
       end
 
       define_template :migration do |xml, from, to, at=Time.now|
@@ -24,13 +30,7 @@ module Hydra
       end
 
       def migrate(to)
-        add_child_node(ng_xml.root, :migration, current, to, Time.now)
-      end
-
-      def current
-        result = self.find_by_terms(:current).text
-        result = self.class.default_version if result.blank?
-        result
+        add_child_node(find_by_terms(:history), :migration, current.first.to_s, to, Time.now)
       end
     end
   end
