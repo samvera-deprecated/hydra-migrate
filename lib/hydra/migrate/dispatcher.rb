@@ -11,7 +11,6 @@ module Hydra
       end
 
       def load_migrations(path)
-        $stderr.puts "loading migrations from #{path}"
         Dir[File.join(path,'**','*.rb')].each { |migration_file|
           existing_migrations = ObjectSpace.each_object(Hydra::Migrate::Migration).to_a
           load(migration_file)

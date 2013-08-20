@@ -59,6 +59,13 @@ Or install it yourself as:
     # Migrate one particular class of objects
     $ rake hydra:migrate[MyModel]
 
+## Todo
+
+* Reversible migrations (rollback)
+* Improved rake task(s):
+    * Specify target version (already possible in raw code)
+    * Migrate specific object, not entire model class
+
 ## Contributing
 
 1. Fork it
