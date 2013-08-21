@@ -38,15 +38,22 @@ module Hydra
         object.is_a?(Hydra::ModelMixins::Migratable) and not migrations_for(object, {:from=>object.current_migration}.merge(constraints)).empty?
       end
 
-      def migrate!(object, to=nil, opts={})
-        raise "Not a migratable object: #{object.inspect}" unless object.is_a?(Hydra::ModelMixins::Migratable)
-        migrations_for(object, :from=>object.current_migration, :to=>to).each do |migration|
-          migration[:block].call(object, to, self)
-          object.migrationInfo.migrate(migration[:to])
-          object.current_migration = migration[:to]
-          object.save unless opts[:dry_run]
-        end
-        object
+      def migrate!(*args)
+        opts = args.last.is_a?(Hash) ? args.pop : {}
+        objects=args.flatten
+        objects.each { |object|
+          raise "Not a migratable object: #{object.inspect}" unless object.is_a?(Hydra::ModelMixins::Migratable)
+        }
+  
+        objects.collect { |object|
+          migrations_for(object, :from=>object.current_migration, :to=>opts[:to]).each do |migration|
+            migration[:block].call(object, opts[:to], self)
+            object.migrationInfo.migrate(migration[:to])
+            object.current_migration = migration[:to]
+            object.save unless opts[:dry_run]
+          end
+          object
+        }
       end
     end
   end

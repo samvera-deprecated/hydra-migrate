@@ -74,6 +74,20 @@ describe Hydra::Migrate do
         expect(subject.myMetadata.migrated).to eq(['yep, YEP!'])
         expect(subject.current_migration).to eq('2')
       end
+
+      it "should migrate multiple objects" do
+        subject_2 = subject.class.new
+        expect(subject.current_migration).to be_blank
+        expect(subject.myMetadata.migrated).to be_blank
+        expect(subject_2.current_migration).to be_blank
+        expect(subject_2.myMetadata.migrated).to be_blank
+
+        migrator.migrate!([subject, subject_2], :to=>1)
+        expect(subject.myMetadata.migrated).to eq(['yep'])
+        expect(subject.current_migration).to eq('1')
+        expect(subject_2.myMetadata.migrated).to eq(['yep'])
+        expect(subject_2.current_migration).to eq('1')
+      end
     end
   end
 
