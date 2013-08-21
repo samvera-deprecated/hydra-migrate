@@ -8,9 +8,9 @@ module Hydra
         t.current
         t.history do
           t.migration do
-            t.from(:path=>'@from')
-            t.to(:path=>'@to')
-            t.at(:path=>'@at')
+            t.from(:path=>'@from', :namespace_prefix=>nil)
+            t.to(:path=>'@to', :namespace_prefix=>nil)
+            t.at(:path=>'@at', :namespace_prefix=>nil)
           end
         end
       end
