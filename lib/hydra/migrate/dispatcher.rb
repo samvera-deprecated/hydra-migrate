@@ -1,3 +1,5 @@
+require 'active_support/core_ext/class/subclasses'
+
 module Hydra
   module Migrate
     class Dispatcher
@@ -11,16 +13,20 @@ module Hydra
       end
 
       def load_migrations(path)
+        result = []
         Dir[File.join(path,'**','*.rb')].each { |migration_file|
-          existing_migrations = ObjectSpace.each_object(Hydra::Migrate::Migration).to_a
+          existing_migrations = Hydra::Migrate::Migration.descendants
           load(migration_file)
-          new_migrations = ObjectSpace.each_object(Hydra::Migrate::Migration).to_a - existing_migrations
+          new_migrations = Hydra::Migrate::Migration.descendants - existing_migrations
           new_migrations.each { |klass| klass.new(self) }
+          result = new_migrations
         }
+        result
       end
 
       def define_migration(signature={}, block)
-        self.migrations[signature[:for]] << { :from=>signature[:from].to_s, :to=>signature[:to].to_s, :block=>block }
+        memo = { :from=>signature[:from].to_s, :to=>signature[:to].to_s, :block=>block }
+        self.migrations[signature[:for]] << memo unless self.migrations[signature[:for]].include?(memo)
       end
 
       def migrations_for(target, constraints={})
@@ -47,10 +53,15 @@ module Hydra
   
         objects.collect { |object|
           migrations_for(object, :from=>object.current_migration, :to=>opts[:to]).each do |migration|
-            migration[:block].call(object, opts[:to], self)
+            yield(object,migration,self) if block_given?
+            migration[:block].call(object, migration[:to], self)
             object.migrationInfo.migrate(migration[:to])
             object.current_migration = migration[:to]
-            object.save unless opts[:dry_run]
+            unless opts[:dry_run]
+              unless object.save 
+                raise %{Cannot save #{object.pid}:\n#{object.errors.to_a.join("\n")}}
+              end
+            end
           end
           object
         }
