@@ -57,13 +57,15 @@ Or install it yourself as:
     $ rake hydra:migrate
 
     # Migrate one particular class of objects
-    $ rake hydra:migrate[MyModel]
+    $ rake hydra:migrate models=MyModel
+
+    # Target a specific version
+    $ rake hydra:migrate to=3
 
 ## Todo
 
 * Reversible migrations (rollback)
 * Improved rake task(s):
-    * Specify target version (already possible in raw code)
     * Migrate specific object, not entire model class
 
 ## Contributing
