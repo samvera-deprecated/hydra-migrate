@@ -52,6 +52,10 @@ describe Hydra::Migrate do
       @migration = TestClassMigration.new(migrator)
     end
 
+    after :each do
+      Object.send(:remove_const, :TestClassMigration)
+    end
+
     it "should target the right class" do
       TestClassMigration.target_class.should eq(TestClass)
     end
@@ -128,6 +132,20 @@ describe Hydra::Migrate do
       expect { IncorrectTestClassMigration.migrate(2) { } }.to raise_error(ArgumentError)
       expect { IncorrectTestClassMigration.migrate(1=>2) { } }.not_to raise_error()
       expect { IncorrectTestClassMigration.migrate(1=>2,2=>3) { } }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe "class methods" do
+    it ".migrate_all!" do
+      receiver = double('receiver')
+      receiver.should_receive(:check).once
+      ActiveFedora::Base.stub(:find_each).and_yield(subject)
+      expect(subject.current_migration).to eq('')
+      Hydra::Migrate::Dispatcher.migrate_all!(TestClass, to: '1', path: File.expand_path('../../fixtures/db/hydra',__FILE__)) do |o,m,d|
+        receiver.check(o,m,d)
+      end
+      expect(subject.myMetadata.migrated).to eq(['yep'])
+      expect(subject.current_migration).to eq('1')
     end
   end
 end

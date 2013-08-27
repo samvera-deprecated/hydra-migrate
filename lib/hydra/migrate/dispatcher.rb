@@ -3,6 +3,10 @@ require 'active_support/core_ext/class/subclasses'
 module Hydra
   module Migrate
     class Dispatcher
+      def initialize(path=nil)
+        self.load_migrations(path) unless path.nil?
+      end
+
       def migrations
         @migrations || reset!
       end
@@ -65,6 +69,21 @@ module Hydra
           end
           object
         }
+      end
+
+      def self.migrate_all!(*args, &block)
+        opts = {path: '.'}
+        opts.merge!(args.pop) if args.last.is_a?(Hash)
+        dispatcher = self.new(opts[:path])
+        models = args
+        models << ActiveFedora::Base if models.empty?
+        models.flatten.each do |klass|
+          klass.find_each({},{:cast=>true}) do |obj|
+            while dispatcher.can_migrate? obj and (opts[:to].nil? or obj.current_migration != opts[:to])
+              dispatcher.migrate!(obj, &block)
+            end
+          end
+        end
       end
     end
   end
