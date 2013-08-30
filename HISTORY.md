@@ -1,3 +1,6 @@
+* 0.2.1 (29 Aug 2013) [Michael Klein]
+    * Save without validating (leave object validation to the migration)
+
 * 0.2.0 (27 Aug 2013) [Michael Klein]
     * Add Dispatcher#migrate_all!(*classes, :to=>version, :path=>path_to_migrations)
 
