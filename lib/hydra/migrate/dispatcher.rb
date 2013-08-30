@@ -61,11 +61,7 @@ module Hydra
             migration[:block].call(object, migration[:to], self)
             object.migrationInfo.migrate(migration[:to])
             object.current_migration = migration[:to]
-            unless opts[:dry_run]
-              unless object.save 
-                raise %{Cannot save #{object.pid}:\n#{object.errors.to_a.join("\n")}}
-              end
-            end
+            object.save(:validate=>false) unless opts[:dry_run]
           end
           object
         }
