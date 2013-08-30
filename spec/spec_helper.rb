@@ -9,7 +9,7 @@ require 'rspec/autorun'
 
 begin
   require 'simplecov'
-  SimpleCov.start
+  SimpleCov.start { add_filter 'spec/' }
 rescue LoadError
 end
 

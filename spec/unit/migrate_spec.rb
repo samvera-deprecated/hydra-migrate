@@ -8,7 +8,7 @@ describe Hydra::Migrate do
         d.field :migrated, :string
       end
 
-      def save
+      def save(opts={})
         true
       end
     end
