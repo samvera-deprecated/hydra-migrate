@@ -5,7 +5,7 @@ module Hydra
 
       included do
         has_metadata :name=>"migrationInfo", :type=>Hydra::Datastream::MigrationInfo, :autocreate=>true
-        delegate :current_migration, :to=>:migrationInfo, :at=>[:current], :unique=>true
+        has_attributes :current_migration, :datastream=>:migrationInfo, :at=>[:current], :multiple=>false
       end
     end
   end
