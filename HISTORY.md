@@ -1,3 +1,6 @@
+* 0.3.0 (06 Dec 2013) [Michael Klein]
+    * Update to use preferred (and future-proof) AF delegation methods
+
 * 0.2.1 (29 Aug 2013) [Michael Klein]
     * Save without validating (leave object validation to the migration)
 
