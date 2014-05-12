@@ -1,3 +1,11 @@
+# NOTICE: THIS PROJECT IS DEPRECATED
+
+#### This project, and all others in [projecthydra-deprecated](http://github.com/projecthydra-deprecated), have been deprecated and are no longer actively maintained by the Hydra Project developer community. See the Hydra Project's main Github page at [projecthydra](http://github.com/projecthydra/) for projects that are actively maintained.
+
+_Original README is below_
+
+--------------------------
+
 # Hydra::Migrate [![Build Status](https://travis-ci.org/projecthydra/hydra-migrate.png?branch=master)](https://travis-ci.org/projecthydra/hydra-migrate)
 
 Simple migrations for Hydra models
